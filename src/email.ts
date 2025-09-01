@@ -24,7 +24,11 @@ export function renderHtml(a: AlertRow, htmlTemplate: string): string {
         .replace(/{rule_id}/g, String(a.rule_id))
         .replace(/{rule_level}/g, String(a.rule_level))
         .replace(/{agent_name}/g, escapeHtml(a.agent_name))
-        .replace(/{agent_id}/g, escapeHtml(a.agent_id));
+        .replace(/{agent_id}/g, escapeHtml(a.agent_id))
+        .replace(/{src_ip}/g, escapeHtml(a.src_ip || ''))
+        .replace(/{dst_ip}/g, escapeHtml(a.dst_ip || ''))
+        .replace(/{sig_info}/g, escapeHtml(a.sig_info || ''))
+        .replace(/{device_id}/g, escapeHtml(a.device_id || ''));
 }
 
 function escapeHtml(s: string): string {

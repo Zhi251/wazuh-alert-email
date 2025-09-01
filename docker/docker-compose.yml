@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  wazuh-alert-listener:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: wazuh-alert-listener
+    restart: unless-stopped
+
+    # ports:
+    #   - "3000:3000"
+
+    environment:
+      # PostgreSQL 連接設定 (連接外部資料庫)
+      - PGHOST=${PGHOST}
+      - PGPORT=${PGPORT}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+
+      # Wazuh API 設定
+      - WAZUH_BASE_URL=${WAZUH_BASE_URL}
+      - WAZUH_USERNAME=${WAZUH_USERNAME}
+      - WAZUH_PASSWORD=${WAZUH_PASSWORD}
+
+      # Email 設定
+      - MAIL_SENDER=${MAIL_SENDER}
+      - MAIL_APP_PASSWORD=${MAIL_APP_PASSWORD}
+      - MAIL_DEFAULT_RECEIVER=${MAIL_DEFAULT_RECEIVER}
+
+      # 模板路徑
+      - MAIL_HTML_TEMPLATE=${MAIL_HTML_TEMPLATE}
+
+      # Node.js 環境
+      - NODE_ENV=production
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+
+    # 掛載 .env 文件的正確路徑
+    env_file:
+      - ../.env
+
+    networks:
+      - wazuh-network
+
+
+    # 日誌設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # 資源限制
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+    # 健康檢查
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('healthcheck ok')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  wazuh-network:
+    driver: bridge
+    name: wazuh-network

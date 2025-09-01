@@ -7,6 +7,10 @@ export type AlertRow = {
     description: string;
     agent_id: string;
     agent_name: string;
+    src_ip: string | null;
+    dst_ip: string | null;
+    sig_info: string | null;
+    device_id: string | null;
     created_at: string | null;
     sned_email: boolean;
     send_email_time: string | null;
